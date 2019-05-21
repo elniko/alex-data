@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+<body>
+
+
+
+<div id="box-plot">
+
+</div>
+
+<div id="bar-chart">
+</div>
+
+</body>
+</html>
+
+<script>
+
+    var maleColor = '#1163c1';
+    var femaleColor ='#FF4136';
+
+    fetch("/data").then(function(resp){
+        resp.json().then(function(data) {
+
+            var year = [];
+            var male = [];
+            var female = [];
+            data.forEach(function(obj){
+                year.push(obj.Year) ;
+                male.push(obj.male);
+                female.push(obj.female);
+            });
+
+            boxPlot(year, male, female);
+            barChart(year, male, female);
+
+        });
+    });
+
+    function boxPlot(year, male, female){
+        var plotData = [getPlotData(year, male, 'male', 'box', maleColor), getPlotData(year, female, 'female', 'box', femaleColor)];
+
+        var layout = {
+            yaxis: {
+                title: 'Proportion',
+                zeroline: false
+            },
+            xaxis: {
+                title: 'Years'
+            },
+            boxmode: 'group',
+            title:'Proportion of females and males in teams through the years'
+        };
+        Plotly.newPlot('box-plot', plotData, layout);
+
+    }
+
+    function getPlotData(x, y, name, type, color){
+        return  {
+            x: x,
+            y: y,
+            name: name,
+            marker: {color: color},
+            type: type
+        };
+
+    }
+
+    function barChart(year, male, female) {
+
+        var plotData = [getPlotData(year, male, 'male', 'bar', maleColor), getPlotData(year, female, 'female', 'bar', femaleColor)];
+
+        var layout = {barmode: 'stack'};
+
+        Plotly.newPlot('bar-chart', plotData, layout);
+    }
+
+
+</script>
